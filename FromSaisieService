@@ -1,0 +1,77 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+
+namespace Formulaires_prestations
+{
+    public partial class FormSaisieService : Form
+    {
+        public FormSaisieService()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if(TextBoxCode.Text == " " || TextBoxLibelle.Text ==" " )
+            {
+                MessageBox.Show("Saisie incorrecte, impossible de continuer...!");
+                return;
+            }
+            if (MessageBox.Show("Etes vous sure?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                try
+                {
+                    string sSQL;
+                    string ChaineConnet = "data source=.\\SQLEXPRESS;integrated security=true;Initial catalog=ProjetGestion";
+                    //string ChaineConnet = "data source=176.31.145.208;integrated security=true;Initial catalog=ProjetGestion";
+                    SqlConnection sqlconn = new SqlConnection(ChaineConnet);
+                    // Représente une connexion à une base de données SQL Server
+
+
+                    // Ouverture de la connexion
+                    sqlconn.Open();
+                    // Requette à utilser 
+                    sSQL = @"INSERT INTO Service (s_code, s_desc) VALUES (@param1,@param2)";
+                    SqlCommand cmd;
+                    cmd = new SqlCommand(sSQL, sqlconn);
+                    // Passage de parametres
+                    cmd.Parameters.AddWithValue("@param1", TextBoxCode.Text);
+                    cmd.Parameters.AddWithValue("@param2", TextBoxLibelle.Text);
+                    try
+                    {
+                        // Executer la requette
+                        cmd.ExecuteNonQuery();
+                        MessageBox.Show("Service ajouté...!");
+                        TextBoxCode.Text = "";
+                        TextBoxLibelle.Text = "";
+                        
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex + "Erreur de mise à jours !", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+                    sqlconn.Close();
+                }
+                catch
+                {
+                    MessageBox.Show("Erreur de connexion", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+
+        }
+    }
+}
